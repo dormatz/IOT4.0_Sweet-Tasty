@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sweet_tasty/AddStockFormPage.dart';
 import 'package:sweet_tasty/Stock.dart';
+import 'package:sweet_tasty/Appbar.dart';
 
 class InputPage extends StatefulWidget {
   @override
@@ -14,9 +16,14 @@ class _InputPageState extends State<InputPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Incoming stock")),
-      floatingActionButton: FloatingActionButton(onPressed: openAddStockForm, child: Icon(Icons.add), backgroundColor: Colors.deepPurple),
+      appBar: createAppBar("Incoming Stock", 27.0),
+      floatingActionButton: FloatingActionButton(onPressed: openAddStockForm, child: Icon(Icons.add, color: Colors.grey[600]), backgroundColor: Colors.pink[100]),
       body: Container(child: Center(child: StocksList(_addedStocks),),),
+      persistentFooterButtons: [ElevatedButton.icon(
+                                  onPressed: _addedStocks.isEmpty ? null :  () => arrangeStocks(),
+                                  //style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.teal[600])),
+                                  label: Text('Arrange in warehouse'), icon: Icon(Icons.house_siding_rounded)),
+                                Text('                       ')],
     );
   }
 
@@ -36,10 +43,12 @@ class _InputPageState extends State<InputPage> {
       setState(() {
         _addedStocks.add(newStock);
       });
-      for (var val in _addedStocks){
-        print(val);
-      }
-      print('*****************');
+      print(newStock);
     }
   }
+
+  Future arrangeStocks() async{
+    return;
+  }
+
 }
