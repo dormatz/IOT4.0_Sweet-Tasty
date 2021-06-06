@@ -66,7 +66,7 @@ class  _MainNavBarState extends State<MainNavBar> {
         onTap: onTappedNavBar,
         currentIndex: _currentIndex,
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "dashboard"),
+          BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: "dashboard"),
           BottomNavigationBarItem(icon: Icon(Icons.login), label: "input"),
           BottomNavigationBarItem(icon: Icon(Icons.logout), label: "output")
         ],
@@ -74,3 +74,4 @@ class  _MainNavBarState extends State<MainNavBar> {
     );
   }
 }
+
