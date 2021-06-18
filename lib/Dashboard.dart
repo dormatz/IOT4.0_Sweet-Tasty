@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sweet_tasty/Appbar.dart';
+import 'package:sweet_tasty/database.dart';
 
 class DashboardPage extends StatefulWidget {
   @override
@@ -37,10 +39,11 @@ class DashboardListView extends StatefulWidget {
 }
 
 class _DashboardListViewState extends State<DashboardListView> {
-  int occupany_rate = 40;
+  int occupancy_rate = 40;
   final _1Controller = TextEditingController();
   final _2Controller = TextEditingController();
   final _3Controller = TextEditingController();
+  final db = DatabaseService();
 
 
   @override
@@ -49,28 +52,27 @@ class _DashboardListViewState extends State<DashboardListView> {
         children: <Widget>[
 
           Padding(padding: EdgeInsets.all(20)),
-          ListTile(title: Row(children: [Text("Occupancy rate is  ", style: TextStyle(fontSize: 30, color: Colors.brown[600]),),Text(occupany_rate.toString() + '%', style: occupanyRateStyle(context))])),
+          ListTile(title: Row(children: [Text("Occupancy rate is  ", style: TextStyle(fontSize: 30, color: Colors.brown[600]),),Text(occupancy_rate.toString() + '%', style: occupanyRateStyle(context))])),
           Padding(padding: EdgeInsets.all(20)),
           Divider(),
           Center(child: Text('Queries on the database:', style: TextStyle(fontSize: 26, color: Colors.teal[600]),),),
           Padding(padding: EdgeInsets.all(20)),
           Container(
-            child: TextField(decoration: textFieldsStyle("Quantity check", 'Product name..'), onSubmitted: getQuantity(_1Controller.text) , controller: _1Controller),
+            child: TextField(decoration: textFieldsStyle("Quantity check", 'Product name..', getQuantity, _1Controller.text), controller: _1Controller),
             margin: EdgeInsets.only(right: 10, left: 10),
           ),
           Padding(padding: EdgeInsets.all(30)),
 
           Container(
-            child: TextField(decoration: textFieldsStyle("Position check", 'Product name..'), onSubmitted: getPosition(_2Controller.text) , controller: _2Controller),
+            child: TextField(decoration: textFieldsStyle("Position check", 'Product name..', getPosition, _2Controller.text) , controller: _2Controller),
             margin: EdgeInsets.only(right: 10, left: 10),
           ),
           Padding(padding: EdgeInsets.all(30)),
 
           Container(
-            child: TextField(decoration: textFieldsStyle('Expiration date check', "Product name or 'All' for all products"), onSubmitted: getExpired(_3Controller.text) , controller: _3Controller),
+            child: TextField(decoration: textFieldsStyle('Expiration date check', "Product name or 'All' for all products", getExpired, _3Controller.text) , controller: _3Controller),
             margin: EdgeInsets.only(right: 10, left: 10),
           ),
-
           //shelf query
 
           //list of items which are about to pass their expiration date
@@ -81,11 +83,12 @@ class _DashboardListViewState extends State<DashboardListView> {
     return TextStyle(color: Colors.green, fontSize: 50, letterSpacing: 3,fontWeight: FontWeight.w500);
   }
 
-  InputDecoration textFieldsStyle(labelText, hintText) {
+  InputDecoration textFieldsStyle(labelText, hintText, query, ctrl) {
     return InputDecoration(labelText: labelText,
       labelStyle: TextStyle(color: Colors.brown[600], fontSize: 20),
       hintText: hintText,
-      hintStyle: TextStyle(color: Colors.grey[400], fontSize: 20),
+      hintStyle: TextStyle(color: Colors.grey[400], fontSize: 18),
+      suffixIcon: IconButton(onPressed: () => query(ctrl), icon: Icon(Icons.arrow_forward_outlined)),
       floatingLabelBehavior: FloatingLabelBehavior.always,
       enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(5),
@@ -104,17 +107,47 @@ class _DashboardListViewState extends State<DashboardListView> {
     );
   }
 
-  getQuantity(String item) {
-    return;
+  Future getQuantity(String item) async {
+    int Q = await db.totalQuantity(item);
+    showCupertinoDialog(
+        context: context,
+        barrierDismissible: true,
+        builder:  (context) => CupertinoAlertDialog(
+            title: Text("Quantity of " + item),
+            content: Text(Q.toString()),
+            actions: [TextButton(child:Text('Dismiss'), onPressed: () {Navigator.of(context).pop();},)],
+        )
+    );
   }
-  getPosition(String item) {
-    return;
+
+
+  Future getPosition(String item) async {
+    List<int> sh = await db.getShelfs(item);
+    String shelfs = '';
+    Widget title;
+    if (sh.isEmpty) {
+      title = Text('There are not any ' + item + ' in the warehouse');
+    }
+    else {
+      for (int s in sh) {
+        shelfs = shelfs + s.toString() + ', ';
+      }
+      shelfs = shelfs.substring(0, shelfs.length - 2);
+      title = Text(item + ' can be found in shelfs:');
+    }
+    showCupertinoDialog(
+        context: context,
+        barrierDismissible: true,
+        builder:  (context) => CupertinoAlertDialog(
+          title: title,
+          content: Text(shelfs),
+          actions: [TextButton(child:Text('Dismiss'), onPressed: () {Navigator.of(context).pop();},)],
+        )
+    );
   }
+
   getExpired(String item) {
     return;
   }
 
 }
-
-
-
