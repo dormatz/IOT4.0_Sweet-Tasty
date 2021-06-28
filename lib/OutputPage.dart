@@ -24,7 +24,7 @@ class _OutputPageState extends State<OutputPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: createAppBar("Outgoing Stocks", 22.0),
+      appBar: createAppBar("Outgoing Stocks", 15.0),
       floatingActionButton: Padding(
         child:FloatingActionButton(onPressed: openAddOrdersForm, child: Icon(Icons.add, color: Colors.grey[600],size: 30), backgroundColor: Colors.pink[100], elevation: 8.0,),
         padding:const EdgeInsets.only(right: 2,bottom: 11.0),),

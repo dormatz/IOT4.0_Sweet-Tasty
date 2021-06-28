@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 Widget createAppBar(title, padding){
   Widget myAppBar = AppBar(
     title: Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Container(
             child: Text(title , style: TextStyle(color: Colors.brown[600], fontSize: 25)))

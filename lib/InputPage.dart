@@ -28,7 +28,7 @@ class _InputPageState extends State<InputPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: createAppBar("Incoming Stock", 27.0),
+      appBar: createAppBar("Incoming Stock", 21.0),
       floatingActionButton: buildSpeedDial(),
       body: ModalProgressHUD(
           child: Container(child: Center(child: StocksList(_addedStocks),),),

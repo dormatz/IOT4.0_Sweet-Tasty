@@ -11,11 +11,12 @@ class DatabaseService {
   //totalQuantityByName
   Future totalQuantity(String name) async {
     var total = 0;
+    print(name);
     await boxesCollection.where('name', isEqualTo: name).get().
     then((querySnapshot) => {
       querySnapshot.docs.forEach((doc) {
-        Box box = Box(name:doc['name'], q:doc['q'], shelf:doc['shelf']);
-        total = total + box.q;
+        //Box box = Box(name:doc['name'], q:doc['q'], shelf:doc['shelf']);
+        total = total + doc.get('q');
       })
     });
     return total;
