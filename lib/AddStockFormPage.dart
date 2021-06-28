@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sweet_tasty/Stock.dart';
+import 'package:sweet_tasty/Models.dart';
 
 class AddStockFormPage extends StatefulWidget {
   @override
@@ -11,6 +12,7 @@ class _AddStockFormPageState extends State<AddStockFormPage> {
   final nameController = TextEditingController();
   final numController = TextEditingController(text: "1");
   final qController = TextEditingController();
+  DateTime dateController;
 
   @override
   void dispose() {
@@ -22,8 +24,17 @@ class _AddStockFormPageState extends State<AddStockFormPage> {
   }
 
   void returnCreatedStock(){
-    Stock newStock = new Stock(nameController.text, int.parse(numController.text), int.parse(qController.text));
-    Navigator.of(context).pop(newStock);
+    int numBoxes = int.parse(numController.text);
+    int quantity = int.parse(qController.text);
+    String name = nameController.text;
+    Stock newStock = new Stock(name, numBoxes, quantity);
+    List<Box> newBoxes = [];
+    for (int i = 0; i<numBoxes; i++){
+      Box newBox = new Box(name: name + '_' + (i+1).toString(), q: quantity, expiration_date: dateController);
+      newBoxes.add(newBox);
+    }
+
+    Navigator.of(context).pop([newStock, newBoxes]);
   }
 
 
@@ -48,7 +59,7 @@ class _AddStockFormPageState extends State<AddStockFormPage> {
                 // Text Field is the basic input widget for Flutter.
                 // It comes built in with a ton of great UI and
                 // functionality, such as the labelText field you see below.
-                child: TextField(decoration: InputDecoration(labelText: 'Name of item',), autofocus: true, controller: nameController,),
+                child: TextField(decoration: InputDecoration(labelText: 'Name or index',), autofocus: true, controller: nameController,),
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 12.0),
@@ -56,18 +67,17 @@ class _AddStockFormPageState extends State<AddStockFormPage> {
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 12.0),
-                child: TextField(
+                child: TextFormField(
                   decoration: InputDecoration(labelText: 'Quantity in every container'),
                   keyboardType: TextInputType.number,
                   controller: qController,
                 ),
               ),
-              // A Strange situation.
-              // A piece of the app that you'll add in the next
-              // section *needs* to know its context,
-              // and the easiest way to pass a context is to
-              // use a builder method. So I've wrapped
-              // this button in a Builder as a sort of 'hack'.
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12.0),
+                child: InputDatePickerFormField(initialDate: DateTime.now().add(Duration(days:300)), firstDate: DateTime.now(), lastDate: DateTime(2030), onDateSubmitted: (date) {dateController=date;},)
+              ),
+
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Builder(

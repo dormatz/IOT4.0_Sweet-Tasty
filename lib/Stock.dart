@@ -73,7 +73,7 @@ class _StocksListState extends State<StocksList> {
         //return StockCard(stocks[index],index ,stocks);
         return Card(child: ListTile(
           title: Text(widget.stocks[index].name),
-          subtitle: Text('Number of boxes: ' + widget.stocks[index].numOfBoxes.toString() + ' each box holds: ' + widget.stocks[index].qInEachBox.toString()),
+          subtitle: Text('Number of boxes: ' + widget.stocks[index].numOfBoxes.toString() + '  each box holds: ' + widget.stocks[index].qInEachBox.toString()),
           trailing: GestureDetector(onTap: () {setState(() {stocks.removeAt(index);});}, child: Icon(CupertinoIcons.trash)),
         ));
       },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sweet_tasty/Order.dart';
+import 'Models.dart';
 
 class AddOrderFormPage extends StatefulWidget {
   @override
@@ -21,7 +22,8 @@ class _AddOrderFormPageState extends State<AddOrderFormPage> {
 
   void returnCreatedOrder(){
     Order newOrder = new Order(nameController.text, int.parse(qController.text));
-    Navigator.of(context).pop(newOrder);
+    Box newBox = new Box(name:nameController.text, q: int.parse(qController.text));
+    Navigator.of(context).pop([newOrder, newBox]);
   }
 
 

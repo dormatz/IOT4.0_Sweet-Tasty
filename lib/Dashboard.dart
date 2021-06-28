@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sweet_tasty/Appbar.dart';
 import 'package:sweet_tasty/database.dart';
+import 'ExpiredDataPage.dart';
+import 'Models.dart';
+import 'constants.dart';
 
 class DashboardPage extends StatefulWidget {
   @override
@@ -39,7 +42,8 @@ class DashboardListView extends StatefulWidget {
 }
 
 class _DashboardListViewState extends State<DashboardListView> {
-  int occupancy_rate = 40;
+  String real_occupancy_rate = '';
+  int fake_occupancy_rate = 40;
   final _1Controller = TextEditingController();
   final _2Controller = TextEditingController();
   final _3Controller = TextEditingController();
@@ -47,12 +51,20 @@ class _DashboardListViewState extends State<DashboardListView> {
 
 
   @override
+  void initState() {
+    this.getOccupancy();
+    print('dsfdsf');
+    print(real_occupancy_rate);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ListView(
         children: <Widget>[
 
           Padding(padding: EdgeInsets.all(20)),
-          ListTile(title: Row(children: [Text("Occupancy rate is  ", style: TextStyle(fontSize: 30, color: Colors.brown[600]),),Text(occupancy_rate.toString() + '%', style: occupanyRateStyle(context))])),
+          ListTile(title: Row(children: [Text("Occupancy rate is  ", style: TextStyle(fontSize: 30, color: Colors.brown[600]),),Text(real_occupancy_rate + '%', style: occupanyRateStyle(context))])),
           Padding(padding: EdgeInsets.all(20)),
           Divider(),
           Center(child: Text('Queries on the database:', style: TextStyle(fontSize: 26, color: Colors.teal[600]),),),
@@ -64,7 +76,7 @@ class _DashboardListViewState extends State<DashboardListView> {
           Padding(padding: EdgeInsets.all(30)),
 
           Container(
-            child: TextField(decoration: textFieldsStyle("Position check", 'Product name..', getPosition, _2Controller.text) , controller: _2Controller),
+            child: TextField(decoration: textFieldsStyle("Location check", 'Product name..', getPosition, _2Controller.text) , controller: _2Controller),
             margin: EdgeInsets.only(right: 10, left: 10),
           ),
           Padding(padding: EdgeInsets.all(30)),
@@ -146,8 +158,22 @@ class _DashboardListViewState extends State<DashboardListView> {
     );
   }
 
-  getExpired(String item) {
-    return;
+  getExpired(String item) async {
+    List<Box> expired = await db.getAboutToExpire();
+    await Navigator.of(context).push(
+        MaterialPageRoute(
+            builder: (BuildContext context) {
+              return ExpiredDataPage(expired);
+            },
+            fullscreenDialog: true
+        ));
   }
 
+  void getOccupancy() async {
+    int count = await db.getBoxesCount();
+    setState(() {
+      this.real_occupancy_rate = (100*(count / (NUMBER_OF_LOCATIONS*NUMBER_OF_SHELFS))).ceil().toString();
+      //this.occupancy_rate = 30;
+    });
+  }
 }
