@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sweet_tasty/Order.dart';
 import 'Models.dart';
+import 'Dashboard.dart' as dashboard;
 
 class AddOrderFormPage extends StatefulWidget {
   @override
@@ -11,6 +12,7 @@ class _AddOrderFormPageState extends State<AddOrderFormPage> {
 
   final nameController = TextEditingController();
   final qController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -21,9 +23,11 @@ class _AddOrderFormPageState extends State<AddOrderFormPage> {
   }
 
   void returnCreatedOrder(){
-    Order newOrder = new Order(nameController.text, int.parse(qController.text));
-    Box newBox = new Box(name:nameController.text, q: int.parse(qController.text));
-    Navigator.of(context).pop([newOrder, newBox]);
+    if (_formKey.currentState.validate()) {
+      Order newOrder = new Order(nameController.text, int.parse(qController.text));
+      Box newBox = new Box(name: nameController.text, q: int.parse(qController.text));
+      Navigator.of(context).pop([newOrder, newBox]);
+    }
   }
 
 
@@ -34,7 +38,7 @@ class _AddOrderFormPageState extends State<AddOrderFormPage> {
         title: Text('Add a new Order'),
         backgroundColor: Colors.black87,
       ),
-      body: Container(
+      body: Form(key: _formKey, child:Container(
         color: Colors.black54,
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -48,14 +52,15 @@ class _AddOrderFormPageState extends State<AddOrderFormPage> {
                 // Text Field is the basic input widget for Flutter.
                 // It comes built in with a ton of great UI and
                 // functionality, such as the labelText field you see below.
-                child: TextField(decoration: InputDecoration(labelText: 'Name of item',), autofocus: true, controller: nameController,),
+                child: TextFormField(decoration: InputDecoration(labelText: 'Name of item',), autofocus: true, controller: nameController, validator: dashboard.validator,),
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 12.0),
-                child: TextField(
+                child: TextFormField(
                   decoration: InputDecoration(labelText: 'Quantity'),
                   keyboardType: TextInputType.number,
                   controller: qController,
+                  validator: dashboard.validator,
                 ),
               ),
               // A Strange situation.
@@ -78,6 +83,7 @@ class _AddOrderFormPageState extends State<AddOrderFormPage> {
           ),
         ),
       ),
+    )
     );
   }
 }

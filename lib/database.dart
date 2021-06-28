@@ -22,16 +22,15 @@ class DatabaseService {
   }
 
   //listOfLocationsByName
-  Future getShelfs(String name) async {
-    List<int> shelfs = [];
+  Future getLocationsShelfs(String name) async {
+    List<List<int>> locations_and_shelfs = [];
     await boxesCollection.where('name', isEqualTo: name).get().
     then((querySnapshot) => {
       querySnapshot.docs.forEach((doc) {
-        print(doc['shelf']);
-        shelfs.add(doc['shelf']);
+        locations_and_shelfs.add([doc['location'], doc['shelf']]);
       })
     });
-    return shelfs;
+    return locations_and_shelfs;
   }
 
 
@@ -48,10 +47,18 @@ class DatabaseService {
     return expired;
   }
 
-
-
-  //CloseToexpiredByName
-
+  Future getAboutToExpireByName(String name) async {
+    List<Box> expired = [];
+    await boxesCollection.where('expiration_date', isLessThan: Timestamp.fromDate(DateTime.now().add(Duration(days: DAYS_OF_CLOSE_TO_EXPIRATION)))).get()
+        .then((querysnapshot)=> {
+      querysnapshot.docs.forEach((doc) {
+        if(doc['name']==name) {
+          expired.add(Box(name: doc['name'], q: doc['q'], location: doc['location'],shelf: doc['shelf'], expiration_date: doc['expiration_date'].toDate()));
+        }
+      })
+    });
+    return expired;
+  }
 
   Future<int> getBoxesCount() async {
     int count = await boxesCollection.get()

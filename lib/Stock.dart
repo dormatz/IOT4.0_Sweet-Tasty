@@ -72,12 +72,21 @@ class _StocksListState extends State<StocksList> {
         // In our case, a DogCard for each doggo.
         //return StockCard(stocks[index],index ,stocks);
         return Card(child: ListTile(
-          title: Text(widget.stocks[index].name),
+          title: Text(getTitle(index)),
           subtitle: Text('Number of boxes: ' + widget.stocks[index].numOfBoxes.toString() + '  each box holds: ' + widget.stocks[index].qInEachBox.toString()),
           trailing: GestureDetector(onTap: () {setState(() {stocks.removeAt(index);});}, child: Icon(CupertinoIcons.trash)),
         ));
       },
     );
+  }
+
+  String getTitle(index){
+    int id = int.tryParse(widget.stocks[index].name);
+    if(id != null) { //then its an ID
+      return id.toString(); // if i have time change this to the hebrew name from the csv mapping.
+    }else{
+      return widget.stocks[index].name;
+    }
   }
 }
 
