@@ -32,10 +32,18 @@ class DataPageState extends State<DataPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: createAppBar('', 1.0),
+      appBar: _createAppBar(1.0),
       body: locationsDataTable(this.addedBoxes, this.input, context, this.selected, this.numItems, setState),
     );
   }
+
+ Widget _createAppBar(padding) {
+   if (this.input) {
+     return createAppBar('Locations to insert by order', padding);
+   }else {
+     return createAppBar('Location of items by order', padding);
+   }
+ }
 }
 
 SingleChildScrollView locationsDataTable(List<Box> boxes, bool input,BuildContext context, selected, numItems, setState) {
@@ -125,3 +133,4 @@ SingleChildScrollView locationsDataTable(List<Box> boxes, bool input,BuildContex
     );
   }
 }
+

@@ -4,7 +4,9 @@ import 'package:sweet_tasty/AddStockFormPage.dart';
 import 'package:sweet_tasty/DataPage.dart';
 import 'package:sweet_tasty/Stock.dart';
 import 'package:sweet_tasty/Appbar.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/retry.dart' as retryHttp;
+import 'dart:convert' as convert;
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:sweet_tasty/Models.dart';
 import 'dart:math';
@@ -67,7 +69,7 @@ class _InputPageState extends State<InputPage> {
     }
   }
 
-  Future arrangeStocks() async {
+  Future dummyArrangeStocks() async {
     var rng = Random();
     this._addedBoxes.forEach((box) { box.location = rng.nextInt(NUMBER_OF_LOCATIONS); box.shelf = rng.nextInt(NUMBER_OF_SHELFS)+1;});
     setState(() {
@@ -87,8 +89,39 @@ class _InputPageState extends State<InputPage> {
         ));
   }
 
-  Future realArrangeStocks(List<Stock> stocks) async {
-
+  Future arrangeStocks() async {
+    setState(() {
+      _waiting = true;
+    });
+    String args;
+    this._addedBoxes.forEach((box) {
+      args += 'ids=' + box.name + '&quantity=' + box.q.toString() + '&';
+    });
+    args = args.substring(0, args.length-1); //trimming the last &
+    final client = retryHttp.RetryClient(http.Client());
+    try {
+      var response = await client.post(Uri.parse('http://127.0.0.1:5000/insert' + '?' + args));
+      if(response.statusCode==200) {
+        var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
+        var orderTSP = [];
+        jsonResponse.forEach((key, locShelfOrder) { //key is index starting from 0, locShelfOrder is a list[3] - location, shelf and order in TSP.
+          this._addedBoxes[int.parse(key)].location = locShelfOrder[0];
+          this._addedBoxes[int.parse(key)].shelf = locShelfOrder[1];
+          orderTSP.add(locShelfOrder[2]);
+        });
+        reOrder(orderTSP);
+      }
+    } finally {
+      _waiting = false;
+      client.close();
+    }
+    await Navigator.of(context).push(
+        MaterialPageRoute(
+            builder: (BuildContext context) {
+              return DataPage(this._addedBoxes, true);
+            },
+            fullscreenDialog: true
+        ));
   }
 
   //currently not in use
@@ -175,4 +208,10 @@ class _InputPageState extends State<InputPage> {
     );
   }
 
+  void reOrder(orderTSP) {
+    var copyAddedBoxes = new List.from(this._addedBoxes);
+    for(var i = 0; i< orderTSP.length; i++ ){
+      this._addedBoxes[orderTSP[i]] = copyAddedBoxes[i];
+    }
+  }
 }

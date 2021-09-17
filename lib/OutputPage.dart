@@ -8,6 +8,9 @@ import 'DataPage.dart';
 import 'Models.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'constants.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/retry.dart' as retryHttp;
+import 'dart:convert' as convert;
 
 
 class OutputPage extends StatefulWidget {
@@ -60,7 +63,7 @@ class _OutputPageState extends State<OutputPage> {
     }
   }
 
-  Future findOrders() async{
+  Future dummyFindOrders() async{
     var rng = Random();
     this._addedBoxes.forEach((box) { box.location = rng.nextInt(NUMBER_OF_LOCATIONS); box.shelf = rng.nextInt(NUMBER_OF_SHELFS)+1;});
     setState(() {
@@ -79,6 +82,39 @@ class _OutputPageState extends State<OutputPage> {
             fullscreenDialog: true
         ));
   }
+
+  Future findOrders() async{
+    setState(() {
+      _waiting = true;
+    });
+    String args;
+    this._addedOrders.forEach((order) {
+      args += 'ids=' + order.name + '&quantity=' + order.quantity.toString() + '&';
+    });
+    args = args.substring(0, args.length-1); //trimming the last &
+    final client = retryHttp.RetryClient(http.Client());
+    List<Box> itemsToRemoveByOrder = <Box>[];
+    try {
+      var response = await client.post(Uri.parse('http://127.0.0.1:5000/remove' + '?' + args));
+      if(response.statusCode==200) {
+        var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
+        jsonResponse.forEach((key, object) { //key is index starting from 0
+          itemsToRemoveByOrder.add(Box(name: object['name'], q:object['q'], location:object['location'], shelf:object['shelf']));
+        });
+      }
+    } finally {
+      _waiting = false;
+      client.close();
+    }
+    await Navigator.of(context).push(
+        MaterialPageRoute(
+            builder: (BuildContext context) {
+              return DataPage(itemsToRemoveByOrder, false);
+            },
+            fullscreenDialog: true
+        ));
+  }
+
 
 }
 
