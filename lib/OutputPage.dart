@@ -11,6 +11,7 @@ import 'constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/retry.dart' as retryHttp;
 import 'dart:convert' as convert;
+import 'main.dart';
 
 
 class OutputPage extends StatefulWidget {
@@ -23,6 +24,7 @@ class _OutputPageState extends State<OutputPage> {
   final List<Order> _addedOrders = <Order>[];
   List<Box> _addedBoxes = <Box>[];
   bool _waiting = false;
+  final snackBarNoneinStock = SnackBar(content: Text('None of the products are in stock',style: TextStyle(color: Colors.red),), backgroundColor: Colors.white70,duration: Duration(seconds: 3));
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +89,7 @@ class _OutputPageState extends State<OutputPage> {
     setState(() {
       _waiting = true;
     });
-    String args;
+    String args = "";
     this._addedOrders.forEach((order) {
       args += 'ids=' + order.name + '&quantity=' + order.quantity.toString() + '&';
     });
@@ -95,15 +97,27 @@ class _OutputPageState extends State<OutputPage> {
     final client = retryHttp.RetryClient(http.Client());
     List<Box> itemsToRemoveByOrder = <Box>[];
     try {
-      var response = await client.post(Uri.parse('http://127.0.0.1:5000/remove' + '?' + args));
+      var response = await client.post(Uri.parse('http://' + getIP() + ':5000/remove' + '?' + args));
       if(response.statusCode==200) {
-        var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
-        jsonResponse.forEach((key, object) { //key is index starting from 0
-          itemsToRemoveByOrder.add(Box(name: object['name'], q:object['q'], location:object['location'], shelf:object['shelf']));
-        });
+        if(response.body == "None exist"){
+          ScaffoldMessenger.of(context).showSnackBar(snackBarNoneinStock);
+          return;
+        } else {
+          var jsonResponse = convert.jsonDecode(response.body) as Map<
+              String,
+              dynamic>;
+          jsonResponse.forEach((key, object) { //key is index starting from 0
+            itemsToRemoveByOrder.add(Box(name: object['id'].toString(),
+                q: object['q'],
+                location: object['location'],
+                shelf: object['shelf']));
+          });
+        }
       }
     } finally {
-      _waiting = false;
+      setState(() {
+        _waiting = false;
+      });
       client.close();
     }
     await Navigator.of(context).push(

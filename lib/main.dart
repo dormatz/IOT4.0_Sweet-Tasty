@@ -4,6 +4,19 @@ import 'package:sweet_tasty/InputPage.dart';
 import 'package:sweet_tasty/OutputPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+String ip_address = '10.0.2.2';
+final snackBarIpChange = SnackBar(content: Text('IP Changed to '+ ip_address ,style: TextStyle(color: Colors.green),), backgroundColor: Colors.white70, duration: Duration(seconds: 5));
+
+void setIP(String new_ip, BuildContext context){
+  ip_address = new_ip;
+  ScaffoldMessenger.of(context).showSnackBar(snackBarIpChange);
+}
+
+String getIP(){
+  return ip_address;
+}
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -69,9 +82,9 @@ class  _MainNavBarState extends State<MainNavBar> {
         onTap: onTappedNavBar,
         currentIndex: _currentIndex,
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: "dashboard"),
-          BottomNavigationBarItem(icon: Icon(Icons.login), label: "input"),
-          BottomNavigationBarItem(icon: Icon(Icons.logout), label: "output")
+          BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: "Dashboard"),
+          BottomNavigationBarItem(icon: Icon(Icons.login), label: "Input"),
+          BottomNavigationBarItem(icon: Icon(Icons.logout), label: "Output")
         ],
       ),
     );

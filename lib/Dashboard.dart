@@ -6,6 +6,7 @@ import 'package:sweet_tasty/database.dart';
 import 'ExpiredDataPage.dart';
 import 'Models.dart';
 import 'constants.dart';
+import 'main.dart';
 
 
 class DashboardPage extends StatefulWidget {
@@ -54,6 +55,7 @@ class _DashboardListViewState extends State<DashboardListView> {
   final _firstKey = GlobalKey<FormFieldState>();
   final _secondKey = GlobalKey<FormFieldState>();
   bool _waiting = false;
+  bool isVisible = false;
 
   @override
   void initState() {
@@ -69,30 +71,27 @@ class _DashboardListViewState extends State<DashboardListView> {
           children: <Widget>[
 
           Padding(padding: EdgeInsets.all(20)),
-          ListTile(title: Row(children: [Text("Occupancy rate is  ", style: TextStyle(fontSize: 30, color: Colors.brown[600]),),Text(fake_occupancy_rate.toString() + '%', style: occupanyRateStyle(context))])),
+          ListTile(title: Row(children: [Text("Occupancy rate is  ", style: TextStyle(fontSize: 30, color: Colors.brown[600]),),Text(real_occupancy_rate.toString() + '%', style: occupanyRateStyle(context))])),
           Padding(padding: EdgeInsets.all(20)),
           Divider(),
           Center(child: Text('Queries on the database:', style: TextStyle(fontSize: 26, color: Colors.teal[600]),),),
           Padding(padding: EdgeInsets.all(20)),
           Container(
-            child: TextFormField(key:_firstKey, decoration: textFieldsStyle("Quantity check", 'Product name..', getQuantity, _1Controller), controller: _1Controller, validator: validator,),
+            child: TextFormField(key:_firstKey, decoration: textFieldsStyle("Quantity check", 'Product ID..', getQuantity, _1Controller), controller: _1Controller, validator: validator,),
             margin: EdgeInsets.only(right: 10, left: 10),
           ),
           Padding(padding: EdgeInsets.all(30)),
 
           Container(
-            child: TextFormField(key: _secondKey, decoration: textFieldsStyle("Location check", 'Product name..', getPosition, _2Controller) , controller: _2Controller, validator: validator,),
+            child: TextFormField(key: _secondKey, decoration: textFieldsStyle("Location check", 'Product ID..', getPosition, _2Controller) , controller: _2Controller, validator: validator,),
             margin: EdgeInsets.only(right: 10, left: 10),
           ),
           Padding(padding: EdgeInsets.all(30)),
 
           Container(
-            child: TextField(decoration: textFieldsStyle('Expiration date check', "Name/ID or leave empty for all products", getExpired, _3Controller) , controller: _3Controller),
+            child: TextField(decoration: textFieldsStyle('Expiration date check', "ID or leave empty for all products", getExpired, _3Controller) , controller: _3Controller),
             margin: EdgeInsets.only(right: 10, left: 10),
           ),
-          //shelf query
-
-          //list of items which are about to pass their expiration date
        ]
     )
     );
@@ -184,6 +183,14 @@ class _DashboardListViewState extends State<DashboardListView> {
   }
 
   getExpired(String item) async {
+    if (item.startsWith('ip')){
+       if (item == 'ip default'){
+         setIP('10.0.2.2', context);
+         return;
+       }
+       setIP(item.split(' ')[1], context);
+       return;
+    }
     List<Box> expired;
     await this.Loading();
     if(item.isEmpty){

@@ -52,7 +52,7 @@ class _AddOrderFormPageState extends State<AddOrderFormPage> {
                 // Text Field is the basic input widget for Flutter.
                 // It comes built in with a ton of great UI and
                 // functionality, such as the labelText field you see below.
-                child: TextFormField(decoration: InputDecoration(labelText: 'Name of item',), autofocus: true, controller: nameController, validator: dashboard.validator,),
+                child: TextFormField(decoration: InputDecoration(labelText: 'ID',), autofocus: true, controller: nameController, validator: dashboard.validator,),
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 12.0),

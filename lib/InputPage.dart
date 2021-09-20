@@ -11,6 +11,7 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:sweet_tasty/Models.dart';
 import 'dart:math';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:sweet_tasty/main.dart';
 import 'constants.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
@@ -35,13 +36,15 @@ class _InputPageState extends State<InputPage> {
       body: ModalProgressHUD(
           child: Container(child: Center(child: StocksList(_addedStocks),),),
           inAsyncCall: _waiting, opacity: 0.5, progressIndicator: CircularProgressIndicator(strokeWidth: 6, valueColor: AlwaysStoppedAnimation<Color>(Colors.pink[200]),),),
-      persistentFooterButtons: [ElevatedButton.icon(
+      persistentFooterButtons: [
+        ElevatedButton.icon(
           onPressed: _addedStocks.isEmpty ? null : () =>
               arrangeStocks(),
           //style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.teal[600])),
           label: Text('Arrange in warehouse'),
           icon: Icon(Icons.house_siding_rounded)),
-        Text('                       ')],
+        Text('                       ')
+      ],
     );
   }
 
@@ -93,26 +96,38 @@ class _InputPageState extends State<InputPage> {
     setState(() {
       _waiting = true;
     });
-    String args;
+    var start = DateTime.now();
+    String args = "";
     this._addedBoxes.forEach((box) {
       args += 'ids=' + box.name + '&quantity=' + box.q.toString() + '&';
     });
     args = args.substring(0, args.length-1); //trimming the last &
+    print(args);
     final client = retryHttp.RetryClient(http.Client());
     try {
-      var response = await client.post(Uri.parse('http://127.0.0.1:5000/insert' + '?' + args));
+      print('http://' + ip_address + ':5000/insert' + '?' + args);
+      var response = await client.post(Uri.parse('http://' + ip_address + ':5000/insert' + '?' + args));
       if(response.statusCode==200) {
+        print(response.body);
         var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
         var orderTSP = [];
         jsonResponse.forEach((key, locShelfOrder) { //key is index starting from 0, locShelfOrder is a list[3] - location, shelf and order in TSP.
+          print(key);
+          print(key.runtimeType);
           this._addedBoxes[int.parse(key)].location = locShelfOrder[0];
           this._addedBoxes[int.parse(key)].shelf = locShelfOrder[1];
           orderTSP.add(locShelfOrder[2]);
         });
         reOrder(orderTSP);
       }
-    } finally {
-      _waiting = false;
+    } catch(e) {
+      print(e);
+    }
+    finally {
+      setState(() {
+        _waiting = false;
+      });
+      print(start.difference(DateTime.now()).inSeconds);
       client.close();
     }
     await Navigator.of(context).push(

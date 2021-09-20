@@ -39,9 +39,9 @@ class DataPageState extends State<DataPage> {
 
  Widget _createAppBar(padding) {
    if (this.input) {
-     return createAppBar('Locations to insert by order', padding);
+     return createAppBar('By order', padding);
    }else {
-     return createAppBar('Location of items by order', padding);
+     return createAppBar('By order', padding);
    }
  }
 }
@@ -52,9 +52,9 @@ SingleChildScrollView locationsDataTable(List<Box> boxes, bool input,BuildContex
     boxes.asMap().forEach((index,box) {
       rows.add(DataRow(
           cells: [
-            DataCell(Text(box.name)),
-            DataCell(Text(box.location.toString())),
-            DataCell(Text(box.shelf.toString()))
+            DataCell(Text(box.name, style: TextStyle(fontSize: 18),), ),
+            DataCell(Text(box.location.toString(), style: TextStyle(fontSize: 18))),
+            DataCell(Text(box.shelf.toString(), style: TextStyle(fontSize: 18)))
           ],
           color: MaterialStateProperty.resolveWith<Color>(
                 (Set<MaterialState> states) {
@@ -75,12 +75,12 @@ SingleChildScrollView locationsDataTable(List<Box> boxes, bool input,BuildContex
     });
     return SingleChildScrollView(child: DataTable(
       columns: [
-        DataColumn(label: Text('Name')),
+        DataColumn(label: Text('ID')),
         DataColumn(label: Text('Location')),
         DataColumn(label: Text('Shelf'))
       ],
       rows: rows,
-      columnSpacing: 90,
+      columnSpacing: 108,
       showBottomBorder: true,
       showCheckboxColumn: true,
       horizontalMargin: 10,
@@ -93,10 +93,10 @@ SingleChildScrollView locationsDataTable(List<Box> boxes, bool input,BuildContex
     boxes.asMap().forEach((index, box) {
       rows.add(DataRow(
           cells: [
-            DataCell(Text(box.name)),
-            DataCell(Text(box.q.toString())),
-            DataCell(Text(box.location.toString())),
-            DataCell(Text(box.shelf.toString()))
+            DataCell(Text(box.name,style: TextStyle(fontSize: 18))),
+            DataCell(Text(box.q.toString(),style: TextStyle(fontSize: 18))),
+            DataCell(Text(box.location.toString(),style: TextStyle(fontSize: 18))),
+            DataCell(Text(box.shelf.toString(),style: TextStyle(fontSize: 18)))
           ],
           color: MaterialStateProperty.resolveWith<Color>(
                   (Set<MaterialState> states) {
@@ -117,13 +117,13 @@ SingleChildScrollView locationsDataTable(List<Box> boxes, bool input,BuildContex
     });
     return SingleChildScrollView(child: DataTable(
       columns: [
-        DataColumn(label: Text('Name')),
+        DataColumn(label: Text('ID')),
         DataColumn(label: Text('Quantity')),
         DataColumn(label: Text('Location')),
         DataColumn(label: Text('Shelf'))
       ],
       rows: rows,
-      columnSpacing: 40,
+      columnSpacing: 49,
       showBottomBorder: true,
       showCheckboxColumn: true,
       horizontalMargin: 10,

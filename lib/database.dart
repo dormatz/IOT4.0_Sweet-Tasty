@@ -6,26 +6,25 @@ class DatabaseService {
 
   DatabaseService();
 
-  final CollectionReference boxesCollection = FirebaseFirestore.instance.collection('boxes');
+  final CollectionReference boxesCollection = FirebaseFirestore.instance.collection('storage');
 
   //totalQuantityByName
-  Future totalQuantity(String name) async {
+  Future totalQuantity(String id) async {
     var total = 0;
-    print(name);
-    await boxesCollection.where('name', isEqualTo: name).get().
+    await boxesCollection.where('id', isEqualTo: int.parse(id)).get().
     then((querySnapshot) => {
       querySnapshot.docs.forEach((doc) {
         //Box box = Box(name:doc['name'], q:doc['q'], shelf:doc['shelf']);
-        total = total + doc.get('q');
+        total = total + doc.get('quantity');
       })
     });
     return total;
   }
 
   //listOfLocationsByName
-  Future getLocationsShelfs(String name) async {
+  Future getLocationsShelfs(String id) async {
     List<List<int>> locations_and_shelfs = [];
-    await boxesCollection.where('name', isEqualTo: name).get().
+    await boxesCollection.where('id', isEqualTo: int.parse(id)).get().
     then((querySnapshot) => {
       querySnapshot.docs.forEach((doc) {
         locations_and_shelfs.add([doc['location'], doc['shelf']]);
@@ -42,19 +41,19 @@ class DatabaseService {
         .then((querysnapshot)=> {
            querysnapshot.docs.forEach((doc) {
              print(doc.data());
-             expired.add(Box(name:doc['name'], q: doc['q'], location:doc['location'], shelf:doc['shelf'], expiration_date: doc['expiration_date'].toDate()));
+             expired.add(Box(name:doc['id'].toString(), q: doc['quantity'], location:doc['location'], shelf:doc['shelf'], expiration_date: doc['expiration_date'].toDate()));
            })
         });
     return expired;
   }
 
-  Future getAboutToExpireByName(String name) async {
+  Future getAboutToExpireByName(String id) async {
     List<Box> expired = [];
     await boxesCollection.where('expiration_date', isLessThan: Timestamp.fromDate(DateTime.now().add(Duration(days: DAYS_OF_CLOSE_TO_EXPIRATION)))).get()
         .then((querysnapshot)=> {
       querysnapshot.docs.forEach((doc) {
-        if(doc['name']==name) {
-          expired.add(Box(name: doc['name'], q: doc['q'], location: doc['location'],shelf: doc['shelf'], expiration_date: doc['expiration_date'].toDate()));
+        if(doc['id']==int.parse(id)) {
+          expired.add(Box(name: doc['id'], q: doc['q'], location: doc['location'],shelf: doc['shelf'], expiration_date: doc['expiration_date'].toDate()));
         }
       })
     });
