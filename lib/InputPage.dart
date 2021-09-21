@@ -99,7 +99,7 @@ class _InputPageState extends State<InputPage> {
     var start = DateTime.now();
     String args = "";
     this._addedBoxes.forEach((box) {
-      args += 'ids=' + box.name + '&quantity=' + box.q.toString() + '&';
+      args += 'ids=' + box.name + '&quantity=' + box.q.toString() + '&date=' + box.expiration_date.toString().split(' ')[0] + '&';
     });
     args = args.substring(0, args.length-1); //trimming the last &
     print(args);

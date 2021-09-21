@@ -33,7 +33,8 @@ class _AddStockFormPageState extends State<AddStockFormPage> {
       Stock newStock = new Stock(name, numBoxes, quantity);
       List<Box> newBoxes = [];
       for (int i = 0; i < numBoxes; i++) {
-        Box newBox = new Box(name: name /*+ '_' + (i + 1).toString()*/,
+        Box newBox = new Box(
+            name: name /*+ '_' + (i + 1).toString()*/,
             q: quantity,
             expiration_date: dateController);
         newBoxes.add(newBox);
