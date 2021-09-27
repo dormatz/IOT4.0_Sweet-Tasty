@@ -41,10 +41,10 @@ SingleChildScrollView locationsDataTable(List<Box> boxes,BuildContext context, s
   boxes.asMap().forEach((index,box) {
     rows.add(DataRow(
         cells: [
-          DataCell(Text(box.name)),
-          DataCell(Text(box.location.toString())),
-          DataCell(Text(box.shelf.toString())),
-          DataCell(Text(box.expiration_date.toString()))
+          DataCell(Text(box.name, style: TextStyle(fontSize: 16))),
+          DataCell(Text(box.location.toString(), style: TextStyle(fontSize: 16))),
+          DataCell(Text(box.shelf.toString(), style: TextStyle(fontSize: 16))),
+          DataCell(Text(box.expiration_date.toString(), style: TextStyle(fontSize: 16)))
         ],
         color: MaterialStateProperty.resolveWith<Color>(
                 (Set<MaterialState> states) {
@@ -65,7 +65,7 @@ SingleChildScrollView locationsDataTable(List<Box> boxes,BuildContext context, s
   });
   return SingleChildScrollView(child: DataTable(
     columns: [
-      DataColumn(label: Text('Name')),
+      DataColumn(label: Text('ID')),
       DataColumn(label: Text('Location')),
       DataColumn(label: Text('Shelf')),
       DataColumn(label: Text('Expiration date'))
@@ -73,7 +73,7 @@ SingleChildScrollView locationsDataTable(List<Box> boxes,BuildContext context, s
     rows: rows,
     columnSpacing: 15,
     showBottomBorder: true,
-    showCheckboxColumn: true,
+    showCheckboxColumn: false,
     horizontalMargin: 10,
     //headingRowColor: MaterialStateProperty.all(Colors.teal[100]),
     headingTextStyle: TextStyle(fontSize: 18, color: Colors.black),

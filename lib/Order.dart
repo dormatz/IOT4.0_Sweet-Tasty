@@ -17,8 +17,8 @@ class Order {
 class OrdersList extends StatefulWidget {
   // Builder methods rely on a set of data, such as a list.
   final List<Order> orders;
-
-  OrdersList(this.orders);
+  final Function(int) notifyParent;
+  OrdersList(this.orders, this.notifyParent);
 
   @override
   _OrdersListState createState() => _OrdersListState(orders);
@@ -44,7 +44,7 @@ class _OrdersListState extends State<OrdersList> {
         return Card(child: ListTile(
           title: Text(widget.orders[index].name),
           subtitle: Text('Quantity: ' + widget.orders[index].quantity.toString()),
-          trailing: GestureDetector(onTap: () {setState(() {orders.removeAt(index); print(orders.isEmpty);});}, child: Icon(CupertinoIcons.trash)),
+          trailing: GestureDetector(onTap: () {widget.notifyParent(index);}, child: Icon(CupertinoIcons.trash)),
         ));
       },
     );

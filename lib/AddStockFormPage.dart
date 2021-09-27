@@ -30,7 +30,9 @@ class _AddStockFormPageState extends State<AddStockFormPage> {
       int numBoxes = int.parse(numController.text);
       int quantity = int.parse(qController.text);
       String name = nameController.text;
-      Stock newStock = new Stock(name, numBoxes, quantity);
+      print(dateController);
+      dateController = (dateController == null) ? DateTime.now().add(Duration(days:300)) : dateController;
+      Stock newStock = new Stock(name, numBoxes, quantity, dateController);
       List<Box> newBoxes = [];
       for (int i = 0; i < numBoxes; i++) {
         Box newBox = new Box(
@@ -84,7 +86,9 @@ class _AddStockFormPageState extends State<AddStockFormPage> {
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 9.0),
-                child: InputDatePickerFormField(initialDate: DateTime.now().add(Duration(days:300)), firstDate: DateTime.now(), lastDate: DateTime(2030), onDateSubmitted: (date) {dateController=date;},)
+                child: InputDatePickerFormField
+                  (initialDate: DateTime.now().add(Duration(days:300)), firstDate: DateTime.now(), lastDate: DateTime(2030),
+                  onDateSubmitted: (date) {dateController = date;print(date);})
               ),
 
               Padding(

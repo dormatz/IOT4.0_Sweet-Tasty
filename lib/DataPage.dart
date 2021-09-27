@@ -80,7 +80,7 @@ SingleChildScrollView locationsDataTable(List<Box> boxes, bool input,BuildContex
         DataColumn(label: Text('Shelf'))
       ],
       rows: rows,
-      columnSpacing: 108,
+      columnSpacing: 90,
       showBottomBorder: true,
       showCheckboxColumn: true,
       horizontalMargin: 10,
@@ -123,7 +123,7 @@ SingleChildScrollView locationsDataTable(List<Box> boxes, bool input,BuildContex
         DataColumn(label: Text('Shelf'))
       ],
       rows: rows,
-      columnSpacing: 49,
+      columnSpacing: 31,
       showBottomBorder: true,
       showCheckboxColumn: true,
       horizontalMargin: 10,

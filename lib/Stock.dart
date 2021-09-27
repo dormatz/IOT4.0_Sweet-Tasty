@@ -5,12 +5,13 @@ class Stock {
   final String name;
   final int numOfBoxes;
   final int qInEachBox;
+  final DateTime expiration_date;
 
-  Stock(this.name, this.numOfBoxes, this.qInEachBox);
+  Stock(this.name, this.numOfBoxes, this.qInEachBox, [this.expiration_date=null]);
 
   @override
   String toString(){
-    return "Stock(x: $name, numOfBoxes: $numOfBoxes, qInEach: $qInEachBox )";
+    return "Stock(id: $name, numOfBoxes: $numOfBoxes, qInEach: $qInEachBox, exp_date: $expiration_date)";
   }
 }
 
@@ -47,8 +48,9 @@ class _StockCardState extends State<StockCard> {
 class StocksList extends StatefulWidget {
   // Builder methods rely on a set of data, such as a list.
   final List<Stock> stocks;
+  final Function(int) notifyParent;
 
-  StocksList(this.stocks);
+  StocksList(this.stocks, this.notifyParent);
 
   @override
   _StocksListState createState() => _StocksListState(stocks);
@@ -74,7 +76,7 @@ class _StocksListState extends State<StocksList> {
         return Card(child: ListTile(
           title: Text(getTitle(index)),
           subtitle: Text('Number of boxes: ' + widget.stocks[index].numOfBoxes.toString() + '  each box holds: ' + widget.stocks[index].qInEachBox.toString()),
-          trailing: GestureDetector(onTap: () {setState(() {stocks.removeAt(index);});}, child: Icon(CupertinoIcons.trash)),
+          trailing: GestureDetector(onTap: () { widget.notifyParent(index);}, child: Icon(CupertinoIcons.trash)),
         ));
       },
     );

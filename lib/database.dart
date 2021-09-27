@@ -22,15 +22,15 @@ class DatabaseService {
   }
 
   //listOfLocationsByName
-  Future getLocationsShelfs(String id) async {
-    List<List<int>> locations_and_shelfs = [];
+  Future getDataByID(String id) async {
+    List<Box> data = [];
     await boxesCollection.where('id', isEqualTo: int.parse(id)).get().
     then((querySnapshot) => {
       querySnapshot.docs.forEach((doc) {
-        locations_and_shelfs.add([doc['location'], doc['shelf']]);
+        data.add(Box(name:id.toString(),q:doc['quantity'], location:doc['location'], shelf:doc['shelf'], expiration_date: doc['expiration_date'].toDate()));
       })
     });
-    return locations_and_shelfs;
+    return data;
   }
 
 
@@ -53,7 +53,8 @@ class DatabaseService {
         .then((querysnapshot)=> {
       querysnapshot.docs.forEach((doc) {
         if(doc['id']==int.parse(id)) {
-          expired.add(Box(name: doc['id'], q: doc['q'], location: doc['location'],shelf: doc['shelf'], expiration_date: doc['expiration_date'].toDate()));
+          expired.add(Box(name: doc['id'].toString(), q: doc['quantity'], location: doc['location'],shelf: doc['shelf'], expiration_date: doc['expiration_date'].toDate()));
+          print('found');
         }
       })
     });

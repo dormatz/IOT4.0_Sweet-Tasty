@@ -33,7 +33,7 @@ class _OutputPageState extends State<OutputPage> {
       floatingActionButton: Padding(
         child:FloatingActionButton(onPressed: openAddOrdersForm, child: Icon(Icons.add, color: Colors.grey[600],size: 30), backgroundColor: Colors.pink[100], elevation: 8.0,),
         padding:const EdgeInsets.only(right: 2,bottom: 11.0),),
-      body: ModalProgressHUD(child: Container(child: Center(child: OrdersList(_addedOrders),),),
+      body: ModalProgressHUD(child: Container(child: Center(child: OrdersList(_addedOrders, refreshState),),),
         inAsyncCall: _waiting, opacity: 0.5, progressIndicator: CircularProgressIndicator(strokeWidth: 6, valueColor: AlwaysStoppedAnimation<Color>(Colors.pink[200]),),),
       persistentFooterButtons: [ElevatedButton.icon(
           onPressed: _addedOrders.isEmpty ? null :  () => findOrders(),
@@ -94,6 +94,7 @@ class _OutputPageState extends State<OutputPage> {
       args += 'ids=' + order.name + '&quantity=' + order.quantity.toString() + '&';
     });
     args = args.substring(0, args.length-1); //trimming the last &
+    print(args);
     final client = retryHttp.RetryClient(http.Client());
     List<Box> itemsToRemoveByOrder = <Box>[];
     try {
@@ -103,9 +104,7 @@ class _OutputPageState extends State<OutputPage> {
           ScaffoldMessenger.of(context).showSnackBar(snackBarNoneinStock);
           return;
         } else {
-          var jsonResponse = convert.jsonDecode(response.body) as Map<
-              String,
-              dynamic>;
+          var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
           jsonResponse.forEach((key, object) { //key is index starting from 0
             itemsToRemoveByOrder.add(Box(name: object['id'].toString(),
                 q: object['q'],
@@ -129,6 +128,11 @@ class _OutputPageState extends State<OutputPage> {
         ));
   }
 
+  refreshState(int index) {
+    setState(() {
+      this._addedOrders.removeAt(index);
+    });
+  }
 
 }
 

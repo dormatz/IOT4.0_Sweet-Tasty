@@ -34,7 +34,7 @@ class _InputPageState extends State<InputPage> {
       appBar: createAppBar("Incoming Stock", 21.0),
       floatingActionButton: buildSpeedDial(),
       body: ModalProgressHUD(
-          child: Container(child: Center(child: StocksList(_addedStocks),),),
+          child: Container(child: Center(child: StocksList(_addedStocks, this.refreshState),),),
           inAsyncCall: _waiting, opacity: 0.5, progressIndicator: CircularProgressIndicator(strokeWidth: 6, valueColor: AlwaysStoppedAnimation<Color>(Colors.pink[200]),),),
       persistentFooterButtons: [
         ElevatedButton.icon(
@@ -98,8 +98,10 @@ class _InputPageState extends State<InputPage> {
     });
     var start = DateTime.now();
     String args = "";
-    this._addedBoxes.forEach((box) {
-      args += 'ids=' + box.name + '&quantity=' + box.q.toString() + '&date=' + box.expiration_date.toString().split(' ')[0] + '&';
+    this._addedStocks.forEach((stock) {
+      for(int i=0; i<stock.numOfBoxes; i++) {
+        args += 'ids=' + stock.name + '&quantity=' + stock.qInEachBox.toString() + '&date=' + stock.expiration_date.toString().split(' ')[0] + '&';
+      }
     });
     args = args.substring(0, args.length-1); //trimming the last &
     print(args);
@@ -228,5 +230,11 @@ class _InputPageState extends State<InputPage> {
     for(var i = 0; i< orderTSP.length; i++ ){
       this._addedBoxes[orderTSP[i]] = copyAddedBoxes[i];
     }
+  }
+
+  refreshState(int index) {
+    setState(() {
+      this._addedStocks.removeAt(index);
+    });
   }
 }

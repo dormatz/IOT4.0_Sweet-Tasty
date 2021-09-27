@@ -139,8 +139,11 @@ class _DashboardListViewState extends State<DashboardListView> {
           builder: (context) =>
               CupertinoAlertDialog(
                 title: Text("Quantity of " + item),
-                content: Text(Q.toString()),
-                actions: [TextButton(child: Text('Dismiss'), onPressed: () {
+                content: Column(children: [
+                          Padding(padding: EdgeInsets.all(10)),
+                          Text(Q.toString(),style: TextStyle(fontSize: 30, color: Colors.teal[600]))
+                ],),
+                  actions: [TextButton(child: Text('Dismiss',style: TextStyle(fontSize: 16, color: Colors.lightBlue),), onPressed: () {
                   Navigator.of(context).pop();
                 },)
                 ],
@@ -153,32 +156,25 @@ class _DashboardListViewState extends State<DashboardListView> {
   Future getPosition(String item) async {
     if(_secondKey.currentState.validate()) {
       await this.Loading();
-      List<List<int>> data = await db.getLocationsShelfs(item);
+      List<Box> data = await db.getDataByID(item);
       print(data);
-      String toShow = '';
-      Widget title;
       if (data.isEmpty) {
-        title = Text('There are not any ' + item + ' in the warehouse');
+        await showCupertinoModalPopup(
+            context: context,
+            barrierDismissible: true,
+            builder: (context) =>
+                CupertinoActionSheet(message: Text("The warehouse doesn't contain any units of this product", style: TextStyle(fontSize: 18, color: Colors.redAccent),),
+                  cancelButton: CupertinoActionSheetAction(child: Text('Dismiss', style: TextStyle(color:Colors.lightBlue),), onPressed: () => {Navigator.of(context).pop()},),)
+        );
+        return;
       }
-      else {
-        for (List l in data) {
-          toShow = toShow + l.toString() + ' ';
-        }
-        title = Text(item + ' can be found in:');
-      }
-      showCupertinoDialog(
-          context: context,
-          barrierDismissible: true,
-          builder: (context) =>
-              CupertinoAlertDialog(
-                title: title,
-                content: Text(toShow,style: TextStyle(color: Colors.black, fontSize: 16),),
-                actions: [TextButton(child: Text('Dismiss'), onPressed: () {
-                  Navigator.of(context).pop();
-                },)
-                ],
-              )
-      );
+      await Navigator.of(context).push(
+          MaterialPageRoute(
+              builder: (BuildContext context) {
+                return ExpiredDataPage(data);
+              },
+              fullscreenDialog: true
+          ));
     }
   }
 
